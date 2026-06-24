@@ -33,27 +33,40 @@ export default function App() {
   const handleSecureProposal = async () => {
     setIsSubmitting(true);
     try {
-      const response = await fetch("https://sportex123.pythonanywhere.com/api/calculate-quote", {
+      // ⚠️ Replace 'yourusername' with your actual PythonAnywhere username!
+      const response = await fetch("https://yourusername.pythonanywhere.com/api/proposals", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          itemType: itemType,
-          fabric: fabric,
-          quantity: quantity,
-          embroidery: embroidery
+          clientEmail: "sportexsialkot@gmail.com", 
+          configuration: {
+            silhouette: itemType,
+            fabricCore: fabric,
+            batchQuantity: quantity,
+            applied3DInsignia: embroidery
+          },
+          financialLedger: {
+            unitNetCost: invoice.costPerItem,
+            baseProductionTotal: invoice.totalProduction,
+            logisticsCarriage: invoice.totalShipping,
+            grossValuationTarget: invoice.grandTotal
+          }
         }),
       });
 
-      if (response.ok) {
-        alert("✨ Success! Specification proposal logged in the Sialkot ops system and email dispatched.");
-      } else {
-        alert("Server responded with an issue. Please check configuration parameters.");
+      if (!response.ok) {
+        throw new Error(`Server responded with status: ${response.status}`);
       }
+
+      const data = await response.json();
+      alert("Proposal securely submitted to Sportex Sialkot systems successfully!");
+      console.log("Server response:", data);
+      
     } catch (error) {
-      console.error("API Transmission failed:", error);
-      alert("Could not establish connection to the operations server.");
+      console.error("Submission failed:", error);
+      alert("Could not connect to the server. Please check your connection or try again later.");
     } finally {
       setIsSubmitting(false);
     }
