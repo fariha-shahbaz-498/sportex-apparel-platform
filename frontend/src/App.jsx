@@ -33,9 +33,8 @@ export default function App() {
   const handleSecureProposal = async () => {
     setIsSubmitting(true);
     try {
-      // ⚠️ Replace 'yourusername' with your actual PythonAnywhere username!
-const response = await fetch("https://sportex123.pythonanywhere.com/api/proposals", {
-      method: "POST",
+      const response = await fetch("https://sportex123.pythonanywhere.com/api/proposals", {
+        method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
