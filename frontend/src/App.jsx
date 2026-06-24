@@ -9,6 +9,9 @@ export default function App() {
   const [quantity, setQuantity] = useState(250);
   const [embroidery, setEmbroidery] = useState(true);
   const [invoice, setInvoice] = useState({ costPerItem: 0, totalProduction: 0, totalShipping: 0, grandTotal: 0 });
+  
+  // Loading state for server transmission
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Live Pricing Matrix
   useEffect(() => {
@@ -25,6 +28,36 @@ export default function App() {
 
     setInvoice({ costPerItem, totalProduction, totalShipping, grandTotal });
   }, [itemType, fabric, quantity, embroidery]);
+
+  // Handle sending the proposal data to PythonAnywhere
+  const handleSecureProposal = async () => {
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("https://sportex123.pythonanywhere.com/api/calculate-quote", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          itemType: itemType,
+          fabric: fabric,
+          quantity: quantity,
+          embroidery: embroidery
+        }),
+      });
+
+      if (response.ok) {
+        alert("✨ Success! Specification proposal logged in the Sialkot ops system and email dispatched.");
+      } else {
+        alert("Server responded with an issue. Please check configuration parameters.");
+      }
+    } catch (error) {
+      console.error("API Transmission failed:", error);
+      alert("Could not establish connection to the operations server.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-[#FDFBF7] text-slate-900 font-sans antialiased flex flex-col justify-between selection:bg-amber-500 selection:text-white">
@@ -218,8 +251,14 @@ export default function App() {
                   </label>
                 </div>
 
-                <button type="button" className="w-full bg-[#0F1E36] text-[#D4AF37] font-black text-xs uppercase tracking-widest py-4 px-4 rounded-xl transition-all shadow-xl shadow-amber-950/20 hover:opacity-95">
-                  Secure Spec Proposal
+                {/* CONNECTED INTERACTIVE ACTION BUTTON */}
+                <button 
+                  type="button" 
+                  onClick={handleSecureProposal}
+                  disabled={isSubmitting}
+                  className="w-full bg-[#0F1E36] text-[#D4AF37] font-black text-xs uppercase tracking-widest py-4 px-4 rounded-xl transition-all shadow-xl shadow-amber-950/20 hover:opacity-95 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isSubmitting ? "Transmitting to Sialkot Hub..." : "Secure Spec Proposal"}
                 </button>
               </div>
 
@@ -234,7 +273,7 @@ export default function App() {
                   </div>
                 </div>
 
-                {/* Technical Product Guide Blueprint Visual Component */}
+                {/* Technical Blueprint Component */}
                 <div className="rounded-xl overflow-hidden border border-white/10 bg-black/20 p-2">
                   <img 
                     src="https://encrypted-tbn3.gstatic.com/licensed-image?q=tbn:ANd9GcRlkvZOyr8q9UkD_5LIPk1lBjbzwgkSNX8WlMIpxnRjBywrM3yNXngVNkX1GXLIzLMnqaPLWfmZVpHZIwA" 
@@ -257,7 +296,7 @@ export default function App() {
           </div>
         )}
 
-        {/* VIEW 3: FABRIC MATRIX (SERVICES WITH COMPREHENSIVE TEXTILE PREVIEWS) */}
+        {/* VIEW 3: FABRIC MATRIX */}
         {activePage === 'materials' && (
           <div className="py-4 space-y-8 animate-fadeIn">
             <div>
@@ -266,7 +305,7 @@ export default function App() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               
-              {/* Service 1: French Terry */}
+              {/* French Terry */}
               <div className="bg-white border border-amber-900/5 rounded-3xl shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition-all">
                 <div className="h-56 w-full bg-slate-100 overflow-hidden relative">
                   <img 
@@ -284,12 +323,12 @@ export default function App() {
                     Optimized specifically for structured heavy hoodies and luxury sweats. Thick knit layout lines that exhibit immense architectural stability during high-temperature garment-dyeing operations.
                   </p>
                   <div className="text-[11px] font-mono text-slate-600 bg-[#FDFBF7] p-3 rounded-xl border border-amber-900/5">
-                    Structure Matrix: 100% Combed Clean Cotton Thread / Heavy Loop Cross Weave
+                    Structure Matrix: 100% Combed Clean Cotton Thread / Heavy Loop Cross We Weave
                   </div>
                 </div>
               </div>
 
-              {/* Service 2: Supima Jersey */}
+              {/* Supima Jersey */}
               <div className="bg-white border border-amber-900/5 rounded-3xl shadow-sm overflow-hidden flex flex-col justify-between hover:shadow-md transition-all">
                 <div className="h-56 w-full bg-slate-100 overflow-hidden relative">
                   <img 
@@ -350,7 +389,6 @@ export default function App() {
             </div>
             
             <div className="bg-white border border-amber-900/10 p-8 md:p-12 rounded-3xl shadow-xl grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
-              {/* Email Block */}
               <div className="bg-[#0F1E36] border border-[#D4AF37]/20 rounded-2xl p-6 flex flex-col justify-between items-center space-y-4 shadow-md">
                 <span className="text-[10px] text-[#D4AF37] font-black uppercase tracking-widest block">Direct Secure Mail</span>
                 <a href="mailto:sportexsialkot@gmail.com" className="font-mono text-lg font-bold text-white hover:text-[#D4AF37] transition-colors break-all">
@@ -359,7 +397,6 @@ export default function App() {
                 <span className="text-[9px] text-slate-400 font-bold uppercase tracking-wider">Response target: 12-24 Hours</span>
               </div>
 
-              {/* Phone/WhatsApp Block */}
               <div className="bg-[#0F1E36] border border-[#D4AF37]/20 rounded-2xl p-6 flex flex-col justify-between items-center space-y-4 shadow-md">
                 <span className="text-[10px] text-[#D4AF37] font-black uppercase tracking-widest block">Direct Commercial Desk</span>
                 <a href="tel:+923314234849" className="font-mono text-xl font-bold text-white hover:text-[#D4AF37] transition-colors">
@@ -376,14 +413,13 @@ export default function App() {
 
       </main>
 
-      {/* LUXURY EMBOSSED GLOBAL DESK ANCHOR FOOTER */}
+      {/* LUXURY EMBOSSED FOOTER */}
       <footer className="bg-white border-t border-amber-900/10 py-10 px-6 mt-12 shadow-sm">
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-xs font-bold">
           <div className="text-slate-400 font-medium font-serif order-2 md:order-1">
             © 2026 Sportex Sialkot Premium Inc. All Rights Reserved.
           </div>
           
-          {/* Quick Contact Badge Row */}
           <div className="flex flex-col sm:flex-row items-center gap-3 order-1 md:order-2 w-full md:w-auto">
             <div className="flex items-center space-x-2.5 bg-[#0F1E36]/5 border border-amber-900/5 px-4 py-2.5 rounded-xl shadow-inner w-full sm:w-auto justify-center">
               <span className="text-slate-400 uppercase tracking-widest text-[9px]">Mail:</span>
